@@ -49,6 +49,11 @@ public class UssAdminServiceImpl implements UssAdminService {
     }
 
     @Override
+    public String login(String username, String password) {
+        return null;
+    }
+
+    @Override
     public List<UssPermission> getPermissionList(Long adminId) {
         return null;
     }

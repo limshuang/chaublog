@@ -2,6 +2,7 @@ package com.chau.blog.controller;
 
 
 import com.chau.blog.common.CommonResult;
+import com.chau.blog.dto.UssAdminLoginParam;
 import com.chau.blog.dto.UssAdminParam;
 import com.chau.blog.model.UssAdmin;
 import com.chau.blog.service.UssAdminService;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Api(tags = "UssAdminController", description = "用户权限管理")
 @Controller
@@ -36,6 +40,20 @@ public class UssAdminController {
             CommonResult.failed();
         }
         return CommonResult.success(ussAdmin);
+    }
+
+    @ApiOperation(value = "登录以后返回token")
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult login(@RequestBody UssAdminLoginParam ussAdminLoginParam, BindingResult result) {
+        String token = ussAdminService.login(umsAdminLoginParam.getUsername(), umsAdminLoginParam.getPassword());
+        if (token == null) {
+            return CommonResult.validateFailed("用户名或密码错误");
+        }
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("token", token);
+        tokenMap.put("tokenHead", tokenHead);
+        return CommonResult.success(tokenMap);
     }
 
 }
