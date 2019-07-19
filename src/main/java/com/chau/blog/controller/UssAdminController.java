@@ -46,7 +46,7 @@ public class UssAdminController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult login(@RequestBody UssAdminLoginParam ussAdminLoginParam, BindingResult result) {
-        String token = ussAdminService.login(umsAdminLoginParam.getUsername(), umsAdminLoginParam.getPassword());
+        String token = ussAdminService.login(ussAdminLoginParam.getUsername(), ussAdminLoginParam.getPassword());
         if (token == null) {
             return CommonResult.validateFailed("用户名或密码错误");
         }

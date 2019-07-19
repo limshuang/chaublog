@@ -5,10 +5,17 @@ import com.chau.blog.dto.UssAdminParam;
 import com.chau.blog.model.UssAdmin;
 import com.chau.blog.model.UssPermission;
 import com.chau.blog.service.UssAdminService;
+import com.chau.blog.util.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +30,12 @@ public class UssAdminServiceImpl implements UssAdminService {
 
     @Autowired
     UssAdminServiceDao ussAdminServiceDao;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public UssAdmin getAdminByUsername(String username) {
@@ -50,7 +63,22 @@ public class UssAdminServiceImpl implements UssAdminService {
 
     @Override
     public String login(String username, String password) {
-        return null;
+        String token = null;
+        //密码需要客户端加密后传递
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if(!passwordEncoder.matches(password,userDetails.getPassword())){
+                throw new BadCredentialsException("密码不正确");
+            }
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            token = jwtTokenUtil.generateToken(userDetails);
+//            updateLoginTimeByUsername(username);
+//            insertLoginLog(username);
+        } catch (AuthenticationException e) {
+            LOGGER.warn("登录异常:{}", e.getMessage());
+        }
+        return token;
     }
 
     @Override
