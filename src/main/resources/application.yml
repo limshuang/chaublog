@@ -18,5 +18,8 @@ logging:
     root: info #日志配置DEBUG,INFO,WARN,ERROR
     com.macro.mall: debug
 
+server:
+  #端口号
+  port: 9090
 #  file: demo_log.log #配置日志生成路径
 #  path: /var/logs #配置日志文件名称
